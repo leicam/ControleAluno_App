@@ -31,6 +31,8 @@
 
         cursosTeste = [];
         cursosTeste.length = 10;
+        alunosTeste = []
+        alunosTeste.length = 2;
      
         paraVoltarTexto = "ou 0 para Voltar:";
         listaCursos = "";
@@ -218,8 +220,7 @@
             };
 
             remover(curso){
-                var indice = curso.codigo - 1;
-                cursos.pop(indice);
+                cursos.pop(curso);
                 OperacaoSucessoLog();
             };
         };
@@ -290,6 +291,23 @@
 
     <!-- CLASSE ALUNO -->
     <script type="text/javascript">
+    
+        // dados para teste
+         for (let index = 0; index < cursosTeste.length; index++) {
+            cursosTeste[index] = new Curso();
+            cursosTeste[index].codigo = index + 1;
+            cursosTeste[index].nome = `Curso ${index + 1}`;
+        };
+        cursos = cursosTeste;
+
+        alunosTeste = 
+        [
+            {codigo: 1, nome: "Jeremias", curso: cursos[0], cidade: "Cianorte", estado: "Parana"},
+            {codigo: 2, nome: "Juliano", curso: cursos[1], cidade: "Cianorte", estado: "Parana"},
+            {codigo: 3, nome: "Ton", curso: cursos[2], cidade: "NewYork", estado: "Roraima"},
+        ];
+        alunos = alunosTeste;
+
         class Aluno {
             constructor(nome){
                 this.codigo = 0;
@@ -346,28 +364,20 @@
             listar() {
                 listaAlunos = "";
                  alunos.forEach(a =>{
-                     listaAlunos += `Codigo: ${a.codigo}\nNome: ${a.nome}\nCurso: ${a.curso.nome}\nCidade: ${a.cidade}\nEstado: ${a.estado}\n`;
+                     listaAlunos += `Codigo: ${a.codigo}\nNome: ${a.nome}\nCurso: ${a.curso.nome}\nCidade: ${a.cidade}\nEstado: ${a.estado}\n\n`;
                  });
                  console.log(listaAlunos);
             };
 
             remover(aluno){
-                var indice = aluno.codigo - 1;
-                alunos.pop(indice);                    
+                alunos.pop(aluno);                    
                 OperacaoSucessoLog();
             };
         };
 
         InserirAluno = function(){
 
-           // dados para teste
-            for (let index = 0; index < cursosTeste.length; index++) {
-                cursosTeste[index] = new Curso();
-                cursosTeste[index].codigo = index + 1;
-                cursosTeste[index].nome = `Curso ${index + 1}`;
-            };
-            cursos = cursosTeste;
-
+          
             var promptAluno = 0;
             var dadosAluno = ["Nome","Curso","Cidade","Estado"];
             var dado = 0;
