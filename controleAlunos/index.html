@@ -29,9 +29,16 @@
             {nome: 'Rodrigo', senha: '123'}
         ];
 
+        cursosTeste = [];
+        cursosTeste.length = 10;
+     
         paraVoltarTexto = "ou 0 para Voltar:";
         listaCursos = "";
+        listaAlunos = "";
         cursos = [];
+        alunos = [];
+
+        cursos = cursosTeste;
 
         OperacaoSucessoLog = function(){
             alert("Operação realizada com sucesso!");
@@ -43,7 +50,18 @@
                 return false;
             }
             return true;
+            
         };
+
+        TemAlunoCadastrado = function(){
+            if (alunos.length == 0){
+                alert("Nenhum aluno cadastrado!");
+                return false;
+            }
+            return true;
+            
+        };
+
 
      
 
@@ -63,7 +81,6 @@
                 userNome = prompt("Informe o Usuário ou " + paraVoltarTexto);
                 
                 if (userNome == "" || userNome == null){
-                    console.log(userNome);
                     alert("Informe o usuário!");
                     continue;
                 } 
@@ -136,7 +153,7 @@
                 };
 
                 
-            } while (promptMenu != 01);
+            } while (promptMenu != 0);
         };    
     </script>
 
@@ -201,7 +218,8 @@
             };
 
             remover(curso){
-                cursos.pop(curso.codigo);                    
+                var indice = curso.codigo - 1;
+                cursos.pop(indice);
                 OperacaoSucessoLog();
             };
         };
@@ -262,9 +280,218 @@
         };
 
         ListarCursos = function(){
-            if (!TemCursoCadastrado)
+            if (!TemCursoCadastrado())
                 return false;
             new CursoController().listar();
+            return true;
+        };
+        
+    </script>
+
+    <!-- CLASSE ALUNO -->
+    <script type="text/javascript">
+        class Aluno {
+            constructor(nome){
+                this.codigo = 0;
+                this.nome = nome;
+                this.curso = new Curso();
+                this.cidade = "";
+                this.estado = "";
+                this.falta = 0;
+                this.notas = [];
+            };
+        };
+        AlunoMenu = function(){
+            var voltar = false;
+            var opcaoUser = 0;
+            var opcoesAluno = "1 - Cadastrar Aluno\n" +
+                              "2 - Excluir Aluno\n" +  
+                              "3 - Listar alunos\n" +
+                              "0 - Voltar\n"; 
+            do{
+                voltar = false;
+                opcaoUser = parseInt(prompt(`O que deseja fazer? \n${opcoesAluno}`));
+                switch (opcaoUser) {
+                    case 0:
+                        voltar = true;
+                        break;
+                    case 1:                        
+                        InserirAluno();                       
+                        break;
+                    case 2:
+                        ExcluirAluno();                           
+                        break;
+                    case 3:
+                        ListarAlunos();
+                        break;
+                    default:
+                        alert("Opção inválida!");
+                        continue;
+                };
+
+            } while (opcaoUser != 0);
+            return voltar;
+        };
+    </script>
+
+    <!-- CLASSE ALUNO CONTROLLER-->
+    <script type="text/javascript">
+        class AlunoController{
+            
+            inserir(aluno) {
+                alunos.push(aluno); 
+                OperacaoSucessoLog();                               
+            };
+
+            listar() {
+                listaAlunos = "";
+                 alunos.forEach(a =>{
+                     listaAlunos += `Codigo: ${a.codigo}\nNome: ${a.nome}\nCurso: ${a.curso.nome}\nCidade: ${a.cidade}\nEstado: ${a.estado}\n`;
+                 });
+                 console.log(listaAlunos);
+            };
+
+            remover(aluno){
+                var indice = aluno.codigo - 1;
+                alunos.pop(indice);                    
+                OperacaoSucessoLog();
+            };
+        };
+
+        InserirAluno = function(){
+
+           // dados para teste
+            for (let index = 0; index < cursosTeste.length; index++) {
+                cursosTeste[index] = new Curso();
+                cursosTeste[index].codigo = index + 1;
+                cursosTeste[index].nome = `Curso ${index + 1}`;
+            };
+            cursos = cursosTeste;
+
+            var promptAluno = 0;
+            var dadosAluno = ["Nome","Curso","Cidade","Estado"];
+            var dado = 0;
+            var nomeAluno = "";
+            var cidadeAluno = "";
+            var estadoAluno = "";
+            var cursoAluno;
+            var listaCursos = "";
+            var podeCadastrar = false;
+            var retornoOperacao = true;
+
+            do {
+                if (dado == 1){
+                    cursos.forEach(c => {
+                        listaCursos += "\n" + c.codigo + " - " + c.nome;
+                    });
+                }
+                else
+                    listaCursos = "";
+
+                promptAluno = prompt("Informe " + dadosAluno[dado] + " do Aluno " + paraVoltarTexto + listaCursos); 
+                
+                if (promptAluno == "" || promptAluno == null){
+                    alert("Informe "+ dadosAluno[dado] + " para o aluno!");
+                    continue;
+                }
+                else if (promptAluno != "0") {
+                    
+                    switch (dado) {
+                        case 0:
+
+                            var alunoFind = alunos.find(function(aluno){
+                            return aluno.nome == promptAluno;
+                            });
+                            if (alunoFind){
+                                alert("Aluno já cadastrado!")
+                                retornoOperacao = false;
+                                break;
+                            };
+                            nomeAluno = promptAluno;
+                            break;
+
+                        case 1:
+                            
+                            var cursoFind = cursos.find(function(curso){
+                                return curso.codigo == parseInt(promptAluno);
+                            });
+                            if (!cursoFind){
+                                alert("Curso não cadastrado!")
+                                retornoOperacao = false;
+                                break;
+                            };
+                            cursoAluno = cursoFind; 
+                            break;
+
+                        case 2:
+
+                            cidadeAluno = promptAluno;
+                            break;
+                            
+                        case 3:
+                            
+                            estadoAluno = promptAluno;
+                            break;
+
+                        default:
+                            break;
+                    }
+                    if (!retornoOperacao)
+                        break;
+                    
+                    dado++;
+                    continue;
+                };
+            } while (promptAluno != "0" && dado <= 3);
+            
+            podeCadastrar = (dado > 3);
+
+            if (podeCadastrar){
+                var aluno = new Aluno();
+                aluno = new Aluno();
+                aluno.codigo = alunos.length+1;
+                aluno.nome = nomeAluno;
+                aluno.curso = cursoAluno;
+                aluno.cidade = cidadeAluno;
+                aluno.estado = estadoAluno;
+                new AlunoController().inserir(aluno);
+            }
+            return podeCadastrar;
+        };
+
+        ExcluirAluno = function(){
+            var promptAluno = 0;
+            
+            if (!TemAlunoCadastrado())
+                return false;
+           
+            do {
+                promptAluno = prompt("Informe o código do Aluno " + paraVoltarTexto); 
+                if (promptAluno == "" || promptAluno == null){
+                    alert("Informe o codigo do Aluno!");
+                    continue;
+                }
+                else if (promptAluno != "0") {
+                    var alunoFind = alunos.find(function(aluno){
+                        return aluno.codigo == promptAluno;
+                    });
+                    if (alunoFind){
+                        new AlunoController().remover(alunoFind);
+                        break;
+                    }
+                    else{
+                        alert("Aluno não cadastrado!");
+                        break;
+                    };
+                };
+            } while (promptAluno != "0");
+            return true;
+        };
+
+        ListarAlunos = function(){
+            if (!TemAlunoCadastrado())
+                return false;
+            new AlunoController().listar();
             return true;
         };
         
