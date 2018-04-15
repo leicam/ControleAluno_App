@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>Controle de Alunos</title>
+
+    
+
+</head>
+<body>
+
+    <script type="/javascript" src="/controller/alunoController.js"> </script>
+    <script type="/javascript" src="/classes/Aluno.js"> </script>
+    <!-- <script type="/javascript" src="/classes/Curso.js"> </script> -->
+    <script type="/javascript" src="/classes/App.js"> </script>
+    <!-- <script type="/javascript" src="/controller/cursoController.js"> </script> -->
+    
+    <script type="text/javascript"   >
+
+        var usuarios = 
+        [
+            {nome: 'Joao', senha: '123'},
+            {nome: 'Franciele', senha: '123'},
+            {nome: 'Ana', senha: '123'},
+            {nome: 'Jean', senha: '123'},
+            {nome: 'Rodrigo', senha: '123'}
+        ];
+
+        OperacaoSucessoLog = function(){
+            alert("Operação realizada com sucesso!")
+        };
+
+        class Curso {
+            constructor(nome){
+                this.codigo = 0;
+                this.nome = nome;
+                this.mediaAprovacao = 0;
+                this.alunos = 0;
+            };
+
+        };
+        
+        paraVoltarTexto = "ou 0 para Volta:"
+        cursos = [];
+        class CursoController{
+            inserir(curso) {
+                cursos.push({curso}); 
+                OperacaoSucessoLog();                               
+            };
+
+            listar(cursos) {
+                cursos.forEach(element => {
+                    // alert(element.nome);
+                    console.log(`Codigo: ${element.codigo}\nNome: ${element.nome}\nmediaAprovacao: ${element.mediaAprovacao}\nAlunos: ${element.alunos}`)
+                });
+            };
+
+            remover(cursos, nomeCurso){
+                var cursoFind = cursos.find(function(curso){
+                    return curso.nome == nomeCurso;
+                });
+                if (cursoFind){
+                    cursos.pop(cursoFind.nome);                    
+                    OperacaoSucessoLog();
+                };
+            };
+
+        };
+
+        InserirCurso = function(){
+            var promptCurso = 0;
+            var curso = new Curso();
+            do {
+                promptCurso = prompt("Informe o Nome do Curso " + paraVoltarTexto); 
+                if (promptCurso == "" || promptCurso == null){
+                    alert("Informe um curso!");
+                    continue;
+                }
+                else if (promptCurso != "0") {
+                    curso.nome = promptCurso;
+                    curso.codigo = cursos.length+1;
+                    new CursoController().inserir(curso);
+                    continue;
+                }
+            } while (promptCurso != "0");
+            return true;
+        };
+
+        CadastraCurso = function(){
+            var voltar = false;
+            var opcaoUser = 0;
+            var opcoesCurso = "1 - Cadastrar Curso\n" +
+                              "2 - Excluir Curso\n" +  
+                              "3 - Listar Cursos\n" +
+                              "0 - Voltar\n"; 
+            do{
+                voltar = false;
+                opcaoUser = parseInt(prompt(`O que deseja fazer? \n${opcoesCurso}`));
+                switch (opcaoUser) {
+                    case 0:
+                        voltar = true;
+                        break;
+                    case 1:                        
+                        InserirCurso()                        
+                        break;
+                    case 2:
+                        nomeCurso = porompt("Informe o nome do curso que deseja remover!");
+                        new CursoController().remover(cursos, nomeCurso);
+                        break;
+                    case 3:
+                        new CursoController().listar(cursos);
+                        break;
+                    default:
+                        alert("Opção inválida!");
+                        continue;
+                };
+
+            } while (opcaoUser != 0);
+            return voltar;
+        };
+
+        CadastraAluno = function(){
+            var voltar = false;
+            var opcaoUser = 0;
+            var opcoesAluno = "1 - Cadastrar Aluno\n" +
+                              "2 - Excluir Aluno\n" +  
+                              "3 - Listar alunos\n" +
+                              "0 - Voltar\n"; 
+            do{
+                voltar = false;
+                opcoesAluno = parseInt(prompt(`O que deseja fazer? \n${opcoesAluno}`));
+                switch (opcoesAluno) {
+                    case 0:
+                        voltar = true;
+                        break;
+                    case 1:
+                        AlunoController.inserir();
+                        break;
+                    case 2:
+                        AlunoController.remover();
+                        break;
+                    case 3:
+                        ListarCurso();
+                        break;
+                    default:
+                        alert("Opção inválida!");
+                        continue;
+                };
+
+            } while (opcoesAluno != 0);
+            return voltar;
+        };
+
+        Login = function(){
+            do {
+                userNome = prompt("Informe o Usuário ou " + paraVoltarTexto);
+                
+                if (userNome == "" || userNome == null){
+                    console.log(userNome);
+                    alert("Informe o usuário!");
+                    continue;
+                } 
+                else if (userNome == "0")
+                    break;
+
+                userPassword = prompt("Informe a senha: ","*****");
+
+                if (userPassword == "" || userPassword == null){
+                    alert("Informe a senha do usuário!")
+                    continue;
+                }
+                else if (userPassword == "0")
+                    braak;
+
+                usuarioFound = usuarios.find(function(usuario){
+                    return usuario.nome == userNome;
+                });  
+
+                if (usuarioFound == undefined){
+                    alert("Usuário não cadastrado!")
+                    continue;
+                }
+
+                senhaFound = usuarios.find(function(usuario){
+                    return usuario.senha == userPassword;
+                });  
+
+                if (senhaFound == undefined){
+                    alert("Senha incorreta!")
+                    continue;
+                }
+
+                CadastraCurso()
+
+                if (!CadastraAluno())
+                    continue;
+               
+
+            } while (userNome != "0" || userPassword != "0");
+            if (userNome != "0" || userPassword != "0")
+                alert("Operação encerrada!");
+            return true;
+        };
+
+        Login();
+
+    </script> 
+</body>
+</html>
