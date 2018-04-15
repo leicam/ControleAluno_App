@@ -37,7 +37,7 @@
             alert("Operação realizada com sucesso!");
         };
 
-        TemCursoCadastrado() = function(){
+        TemCursoCadastrado = function(){
             if (cursos.length == 0){
                 alert("Nenhum curso cadastrado!");
                 return false;
@@ -215,11 +215,16 @@
                     continue;
                 }
                 else if (promptCurso != "0") {
+                    var cursoFind = cursos.find(function(curso){
+                        return curso.nome == promptCurso;
+                    });
+                    if (cursoFind){
+                        alert("Curso já cadastrado!")
+                        break;
+                    }
                     var curso = new Curso();
                     curso.nome = promptCurso;
                     curso.codigo = cursos.length+1;
-                    var arrayCurso = [];
-                    arrayCurso.push(curso);
                     new CursoController().inserir(curso);
                     continue;
                 }
