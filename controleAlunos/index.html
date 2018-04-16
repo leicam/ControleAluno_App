@@ -9,8 +9,7 @@
 
 </head>
 <body>
-    
-    
+
     <script type="/javascript" src="/classes/Login.js"></script>
     <script type="/javascript" src="/classes/Menu.js"></script>
     <script type="/javascript" src="/classes/Aluno.js"> </script>
@@ -121,8 +120,10 @@
                 break;
         
             } while (userNome != "0" || userPassword != "0");
-            if ((userNome != "0" || userPassword != "0") && !loginOk)
+            if ((userNome != "0" || userPassword != "0") && !loginOk){
                 alert("Operação encerrada!");
+                return false;
+            };
             return true;
         };
 
@@ -138,8 +139,9 @@
         };    
         MenuNavegacao = function(){
             var opcoesMenu = "1 - Curso\n" +
-                             "2 - Aluno\n" +  
-                             "0 - Sair"; 
+                            "2 - Aluno\n" +  
+                            "3 - Nota\n" +  
+                            "0 - Sair"; 
             do {
                 promptMenu = parseInt(prompt(opcoesMenu));
                 switch (promptMenu) {
@@ -151,6 +153,8 @@
                     case 2:
                         AlunoMenu();
                         break;
+                    case 3:
+                        NotaMenu();
                     default:
                         alert("Opção inválida!");
                         continue;
@@ -175,9 +179,9 @@
             var voltar = false;
             var opcaoUser = 0;
             var opcoesCurso = "1 - Cadastrar Curso\n" +
-                              "2 - Excluir Curso\n" +  
-                              "3 - Listar Cursos\n" +
-                              "0 - Voltar\n"; 
+                            "2 - Excluir Curso\n" +  
+                            "3 - Listar Cursos\n" +
+                            "0 - Voltar\n"; 
             do{
                 voltar = false;
                 opcaoUser = parseInt(prompt(`O que deseja fazer? \n${opcoesCurso}`));
@@ -216,10 +220,10 @@
             listar() {
                 listaCursos = ""; 
                 cursos.forEach(c =>{
-                     listaCursos += `Codigo: ${c.codigo}\nNome: ${c.nome}\nMedia: ${c.mediaAprovacao}\nAlunos: ${c.alunos}\n\n`;
-                 });
-                 console.clear();
-                 console.log(listaCursos);
+                    listaCursos += `Codigo: ${c.codigo}\nNome: ${c.nome}\nMedia: ${c.mediaAprovacao}\nAlunos: ${c.alunos}\n\n`;
+                });
+                console.clear();
+                console.log(listaCursos);
             };
 
             remover(cursoCodigo){
@@ -264,7 +268,7 @@
             
             if (!TemCursoCadastrado())
                 return false;
-           
+        
             do {
                 promptCurso = parseInt(prompt("Informe o código do Curso " + paraVoltarTexto)); 
                 if (promptCurso == "" || promptCurso == null){
@@ -305,7 +309,7 @@
     <script type="text/javascript">
     
         // dados para teste
-         for (let index = 0; index < cursosTeste.length; index++) {
+        for (let index = 0; index < cursosTeste.length; index++) {
             cursosTeste[index] = new Curso();
             cursosTeste[index].codigo = index + 1;
             cursosTeste[index].nome = `Curso ${index + 1}`;
@@ -340,9 +344,9 @@
             var voltar = false;
             var opcaoUser = 0;
             var opcoesAluno = "1 - Cadastrar Aluno\n" +
-                              "2 - Excluir Aluno\n" +  
-                              "3 - Listar alunos\n" +
-                              "0 - Voltar\n"; 
+                            "2 - Excluir Aluno\n" +  
+                            "3 - Listar alunos\n" +
+                            "0 - Voltar\n"; 
             do{
                 voltar = false;
                 opcaoUser = parseInt(prompt(`O que deseja fazer? \n${opcoesAluno}`));
@@ -380,11 +384,11 @@
 
             listar() {
                 listaAlunos = "";
-                 alunos.forEach(a =>{
-                     listaAlunos += `Codigo: ${a.codigo}\nNome: ${a.nome}\nCurso: ${a.curso.nome}\nCidade: ${a.cidade}\nEstado: ${a.estado}\n\n`;
-                 });
-                 console.clear();
-                 console.log(listaAlunos);
+                alunos.forEach(a =>{
+                    listaAlunos += `Codigo: ${a.codigo}\nNome: ${a.nome}\nCurso: ${a.curso.nome}\nFaltas: ${a.falta}\nCidade: ${a.cidade}\nEstado: ${a.estado}\n\n`;
+                });
+                console.clear();
+                console.log(listaAlunos);
             };
 
             remover(alunoCodigo){
@@ -395,8 +399,7 @@
         };
 
         InserirAluno = function(){
-
-          
+        
             var promptAluno = 0;
             var dadosAluno = ["Nome","Curso","Cidade","Estado"];
             var dado = 0;
@@ -502,7 +505,7 @@
             
             if (!TemAlunoCadastrado())
                 return false;
-           
+        
             do {
                 promptAluno = parseInt(prompt("Informe o código do Aluno " + paraVoltarTexto)); 
                 if (promptAluno == "" || promptAluno == null){
@@ -534,6 +537,106 @@
         };
         
     </script>
+
+    <!-- NOTAS -->
+    <script type="text/javascript">
+            
+        NotaMenu = function(){
+            var voltar = false;
+            var opcoesNota = "1 - Lançar Nota\n" +
+                             "2 - Relatório\n" +  
+                             "0 - Voltar";
+            do{
+                voltar = false;
+                opcaoUser = parseInt(prompt(`O que deseja fazer? \n${opcoesNota}`));
+                switch (opcaoUser) {
+                    case 0:
+                        voltar = true;
+                        break;
+                    case 1:                        
+                        LancaNota();                       
+                        break;
+                    case 2:
+                        RelatorioNotas();                           
+                        break;
+                    default:
+                        alert("Opção inválida!");
+                        continue;
+                };
+            } while (opcaoUser != 0);
+            return voltar;
+        };
+
+        LancaNota = function(){
+            var promptNota = [];
+            promptNota.length = 5;
+            var promptFaltas = 0;
+            do {
+                promptNota[0] = parseInt(prompt("Informe o código do Aluno que deseja lançar a Nota " + paraVoltarTexto,0));
+                var alunoFind = alunos.find(function(aluno){
+                return aluno.codigo == promptNota[0];
+                });
+                if (!alunoFind){
+                    alert("Aluno não cadastrado!");
+                    continue;
+                };
+                promptNota[1] = parseInt(prompt(`Informe a Nota 1:`,"0"));
+                if (!IsNotaValida(promptNota[1]))
+                    continue;
+                
+                promptNota[2] = parseInt(prompt(`Informe a Nota 2:`,"0"));
+                if (!IsNotaValida(promptNota[2])) 
+                    continue;
+
+                promptNota[3] = parseInt(prompt(`Informe a Nota 3:`,"0"));
+                if (!IsNotaValida(promptNota[3])) 
+                    continue;
+
+                console.log(alunoFind.notas);
+                promptNota[4] = parseInt(prompt(`Informe a Nota 4:`,"0"));
+                if (!IsNotaValida(promptNota[4]))                            
+                    continue;
+                
+                promptFaltas = parseInt(prompt(`Informe a quantidade de faltas:`,"0"));
+                if (!IsQuantidadeFaltasValida(promptFaltas)){
+                    continue;
+                };
+
+                alunoFind.notas = [];
+                alunoFind.notas.length = 4;
+                for (let x = 1; x < promptNota.length; x++) {
+                    alunoFind.notas[x-1] = promptNota[x];
+                };
+
+                alunoFind.falta = promptFaltas;
+
+                console.log(alunoFind.notas);
+                OperacaoSucessLog();
+                break;
+
+            } while (promptNota != 0);
+            return true;
+        };
+
+        RelatorioNotas = function(){
+            
+        };
+
+        IsNotaValida = function(nota){
+            if (nota < 0 || nota == null){
+                alert("Nota inválida!");
+            };
+            return !(nota < 0 || nota == null);
+        };
+
+        IsQuantidadeFaltasValida = function(falta){
+            if (falta < 0 || falta == null){
+                alert("Quantidade de faltas inválida!");
+            };
+            return !(falta < 0 || falta == null);
+        };
+
+        </script>
 
     <!-- CLASSE MAIN -->
     <script type="text/javascript">
