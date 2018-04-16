@@ -619,7 +619,24 @@
         };
 
         RelatorioNotas = function(){
+            if (!TemAlunoCadastrado())
+                return false;
             
+            var notasAlunos = 0;
+            var mediaAlunos = 0;
+            var statusAprovacao = "";
+
+            // verifica a media 
+            alunos.forEach(a => {
+                notasAlunos += a.notas;
+            });
+
+            alunos.forEach(a => {
+                relatorioAluno = "Aluno: " + a.nome + "\n" +
+                                 "Média Final: " + mediaAlunos + "\n" +
+                                 "Status Aprovação: " + statusAprovacao + "\n" ;
+                console.log()
+            });
         };
 
         IsNotaValida = function(nota){
