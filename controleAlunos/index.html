@@ -42,31 +42,29 @@
 
         cursos = cursosTeste;
 
-        OperacaoSucessoLog = function(){
+        OperacaoSucessLog = function(){
             alert("Operação realizada com sucesso!");
+        };
+
+        OperacaoUnSucessLog = function(){
+            alert("Por algum motivo a operação não pode ser realizada!");
         };
 
         TemCursoCadastrado = function(){
             if (cursos.length == 0){
                 alert("Nenhum curso cadastrado!");
                 return false;
-            }
+            };
             return true;
-            
         };
 
         TemAlunoCadastrado = function(){
             if (alunos.length == 0){
                 alert("Nenhum aluno cadastrado!");
                 return false;
-            }
+            };
             return true;
-            
         };
-
-
-     
-
     </script>
 
     <!-- CLASSE LOGIN -->
@@ -79,6 +77,9 @@
             
         };
         Login = function(){
+            var userNome = "";
+            var userPassword = "";
+            var loginOk = false;
             do {
                 userNome = prompt("Informe o Usuário ou " + paraVoltarTexto);
                 
@@ -114,12 +115,13 @@
                 if (senhaFound == undefined){
                     alert("Senha incorreta!")
                     continue;
-                }
-        
-                new Menu();
+                };
+                
+                loginOk = true;
+                break;
         
             } while (userNome != "0" || userPassword != "0");
-            if (userNome != "0" || userPassword != "0")
+            if ((userNome != "0" || userPassword != "0") && !loginOk)
                 alert("Operação encerrada!");
             return true;
         };
@@ -153,9 +155,9 @@
                         alert("Opção inválida!");
                         continue;
                 };
-
-                
             } while (promptMenu != 0);
+            if (promptMenu == 0)
+                new Login();
         };    
     </script>
 
@@ -204,24 +206,30 @@
 
     <!-- CLASSE CURSO CONTROLLER-->
     <script type="text/javascript">
-        listaCursos = "";
         class CursoController{
-
+            
             inserir(curso) {
                 cursos.push(curso); 
-                OperacaoSucessoLog();                               
+                OperacaoSucessLog();                               
             };
 
             listar() {
-                 cursos.forEach(c =>{
-                     listaCursos += `Codigo: ${c.codigo}\nNome: ${c.nome}\nmediaAprovacao: ${c.mediaAprovacao}\nAlunos: ${c.alunos}\n\n`;
+                listaCursos = ""; 
+                cursos.forEach(c =>{
+                     listaCursos += `Codigo: ${c.codigo}\nNome: ${c.nome}\nMedia: ${c.mediaAprovacao}\nAlunos: ${c.alunos}\n\n`;
                  });
+                 console.clear();
                  console.log(listaCursos);
             };
 
-            remover(curso){
-                cursos.pop(curso);
-                OperacaoSucessoLog();
+            remover(cursoCodigo){
+                var removeIndex = cursos.map(function(item) { return item.codigo; }).indexOf(cursoCodigo)
+                if (removeIndex > 0){
+                    cursos.splice(removeIndex, 1);                    
+                    OperacaoSucessLog();
+                } else{
+                    OperacaoUnSucessLog();
+                }
             };
         };
 
@@ -254,21 +262,25 @@
         ExcluirCurso = function(){
             var promptCurso = 0;
             
-            if (!TemCursoCadastrado)
+            if (!TemCursoCadastrado())
                 return false;
            
             do {
-                promptCurso = prompt("Informe o código do Curso " + paraVoltarTexto); 
+                promptCurso = parseInt(prompt("Informe o código do Curso " + paraVoltarTexto)); 
                 if (promptCurso == "" || promptCurso == null){
                     alert("Informe um curso!");
                     continue;
                 }
-                else if (promptCurso != "0") {
+                else if (promptCurso != 0) {
                     var cursoFind = cursos.find(function(curso){
                         return curso.codigo == promptCurso;
                     });
                     if (cursoFind){
-                        new CursoController().remover(cursoFind);
+                        if (cursoFind.alunos > 0){
+                            alert("Não será possível remover Curso com alunos cadastrados!");
+                            break;
+                        };
+                        new CursoController().remover(promptCurso);
                         break;
                     }
                     else{
@@ -276,7 +288,7 @@
                         break;
                     };
                 };
-            } while (promptCurso != "0");
+            } while (promptCurso != 0);
             return true;
         };
 
@@ -307,6 +319,11 @@
             {codigo: 3, nome: "Ton", curso: cursos[2], cidade: "NewYork", estado: "Roraima"},
         ];
         alunos = alunosTeste;
+
+        // testa quantidade de alunos no curso 1 > 50
+        cursos[0].alunos = 50;
+        cursos[1].alunos = 1;
+        cursos[2].alunos = 1;
 
         class Aluno {
             constructor(nome){
@@ -358,7 +375,7 @@
             
             inserir(aluno) {
                 alunos.push(aluno); 
-                OperacaoSucessoLog();                               
+                OperacaoSucessLog();                               
             };
 
             listar() {
@@ -366,12 +383,14 @@
                  alunos.forEach(a =>{
                      listaAlunos += `Codigo: ${a.codigo}\nNome: ${a.nome}\nCurso: ${a.curso.nome}\nCidade: ${a.cidade}\nEstado: ${a.estado}\n\n`;
                  });
+                 console.clear();
                  console.log(listaAlunos);
             };
 
-            remover(aluno){
-                alunos.pop(aluno);                    
-                OperacaoSucessoLog();
+            remover(alunoCodigo){
+                var removeIndex = alunos.map(function(item) { return item.codigo; }).indexOf(alunoCodigo)
+                alunos.splice(removeIndex, 1);                    
+                OperacaoSucessLog();
             };
         };
 
@@ -418,6 +437,7 @@
                                 break;
                             };
                             nomeAluno = promptAluno;
+                            dado++;
                             break;
 
                         case 1:
@@ -430,17 +450,26 @@
                                 retornoOperacao = false;
                                 break;
                             };
+                            quantidadeAlunosCurso = cursoFind.alunos += 1;
+                            if (quantidadeAlunosCurso > 50){
+                                alert("Quantidade máxima de alunos por curso atingida! - Quantidade Máxima  50")
+                                break;
+                            }
+                                
                             cursoAluno = cursoFind; 
+                            dado++;
                             break;
 
                         case 2:
 
                             cidadeAluno = promptAluno;
+                            dado++;
                             break;
                             
                         case 3:
                             
                             estadoAluno = promptAluno;
+                            dado++;
                             break;
 
                         default:
@@ -449,7 +478,6 @@
                     if (!retornoOperacao)
                         break;
                     
-                    dado++;
                     continue;
                 };
             } while (promptAluno != "0" && dado <= 3);
@@ -476,17 +504,17 @@
                 return false;
            
             do {
-                promptAluno = prompt("Informe o código do Aluno " + paraVoltarTexto); 
+                promptAluno = parseInt(prompt("Informe o código do Aluno " + paraVoltarTexto)); 
                 if (promptAluno == "" || promptAluno == null){
                     alert("Informe o codigo do Aluno!");
                     continue;
                 }
-                else if (promptAluno != "0") {
+                else if (promptAluno != 0) {
                     var alunoFind = alunos.find(function(aluno){
                         return aluno.codigo == promptAluno;
                     });
                     if (alunoFind){
-                        new AlunoController().remover(alunoFind);
+                        new AlunoController().remover(promptAluno);
                         break;
                     }
                     else{
@@ -494,7 +522,7 @@
                         break;
                     };
                 };
-            } while (promptAluno != "0");
+            } while (promptAluno != 0);
             return true;
         };
 
@@ -507,9 +535,27 @@
         
     </script>
 
-    <!-- CHAMADA CLASSES -->
+    <!-- CLASSE MAIN -->
     <script type="text/javascript">
-        new Login();
+        class Main{
+            constructor(){
+                Main();
+            };
+        };
+        Main = function(){
+            if (new Login())
+                new Menu();
+        };
+    </script>
+
+    <!-- CLASSE APP -->
+    <script type="text/javascript">
+        class App{
+            constructor(){
+                new Main();
+            };
+        };
+        new App();
     </script>
 
 </body>
